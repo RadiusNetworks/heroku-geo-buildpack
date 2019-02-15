@@ -111,6 +111,7 @@ if [ -f $CACHE_DIR/.bundle/config ]; then
 fi
 echo "---
 BUNDLE_BUILD__RGEO: "--with-opt-dir=$BUILD_DIR/$TARGET_VENDOR_DIR --with-geos-config=$BUILD_DIR/$TARGET_VENDOR_DIR/bin/geos-config"
+BUNDLE_BUILD__RGEO-PROJ4: "--with-opt-dir=$BUILD_DIR/$TARGET_VENDOR_DIR --with-proj-lib=$APP_VENDOR/lib --with-proj-include=$APP_VENDOR/include"
 BUNDLE_FROZEN: '1'
 BUNDLE_PATH: vendor/bundle
 BUNDLE_BIN: vendor/bundle/bin
