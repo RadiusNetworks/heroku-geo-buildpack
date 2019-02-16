@@ -52,6 +52,10 @@ function set-default-env (){
   echo "export $1=\${$1:-$2}" >> $PROFILE_PATH
 }
 
+function set-prepend-env (){
+  echo "export $1=$2\${$1:+:\$$1}" >> $PROFILE_PATH
+}
+
 # Retrieve versions
 GEOS_VERSION=$(manifest_version "geos")
 GDAL_VERSION=$(manifest_version "gdal")
@@ -102,6 +106,7 @@ APP_VENDOR="/app/$TARGET_VENDOR_DIR"
 set-env GEOS_LIBRARY_PATH "$APP_VENDOR/lib"
 set-env GDAL_LIBRARY_PATH "$APP_VENDOR/lib"
 set-env PROJ4_LIBRARY_PATH "$APP_VENDOR/lib"
+set-env PROJ_LIB "$APP_VENDOR/share/proj/"
 set-env GDAL_DATA "$APP_VENDOR/share/gdal"
 
 # Bundle workaround
@@ -111,7 +116,7 @@ if [ -f $CACHE_DIR/.bundle/config ]; then
 fi
 echo "---
 BUNDLE_BUILD__RGEO: "--with-opt-dir=$BUILD_DIR/$TARGET_VENDOR_DIR --with-geos-config=$BUILD_DIR/$TARGET_VENDOR_DIR/bin/geos-config"
-BUNDLE_BUILD__RGEO-PROJ4: "--with-opt-dir=$BUILD_DIR/$TARGET_VENDOR_DIR --with-proj-lib=$APP_VENDOR/lib --with-proj-include=$APP_VENDOR/include"
+BUNDLE_BUILD__RGEO-PROJ4: "--with-opt-dir=$BUILD_DIR/$TARGET_VENDOR_DIR"
 BUNDLE_FROZEN: '1'
 BUNDLE_PATH: vendor/bundle
 BUNDLE_BIN: vendor/bundle/bin
@@ -119,9 +124,15 @@ BUNDLE_WITHOUT: development:test
 BUNDLE_DISABLE_SHARED_GEMS: '1'
 " > $BUILD_DIR/.bundle/config
 
-set-default-env LIBRARY_PATH "$APP_VENDOR/lib"
-set-default-env LD_LIBRARY_PATH "$APP_VENDOR/lib"
-set-default-env CPATH "$APP_VENDOR/include"
-set-default-env PATH "$APP_VENDOR/bin"
+set-prepend-env LIBRARY_PATH "$APP_VENDOR/lib"
+set-prepend-env LD_LIBRARY_PATH "$APP_VENDOR/lib"
+set-prepend-env CPATH "$APP_VENDOR/include"
+set-prepend-env PATH "$APP_VENDOR/bin"
+
+# mkdir -p $APP_VENDOR/lib
+# cp -r $BUILD_DIR/$TARGET_VENDOR_DIR/lib/* $APP_VENDOR/lib/
+
+# force recompile of the rgeo gems every time
+find $CACHE_DIR/vendor/bundle/ruby -type d -name "rgeo-*" -depth -exec rm -rf {} \;
 
 echo "-----> Vendoring geo libraries done"
