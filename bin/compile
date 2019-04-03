@@ -133,6 +133,9 @@ set-prepend-env PATH "$APP_VENDOR/bin"
 # cp -r $BUILD_DIR/$TARGET_VENDOR_DIR/lib/* $APP_VENDOR/lib/
 
 # force recompile of the rgeo gems every time
-find $CACHE_DIR/vendor/bundle/ruby -type d -name "rgeo-*" -depth -exec rm -rf {} \;
+CACHE_BUNDLE_RUBY_DIR="$CACHE_DIR/vendor/bundle/ruby"
+if [ ! -d $CACHE_BUNDLE_RUBY_DIR ]; then
+  find $CACHE_BUNDLE_RUBY_DIR -type d -name "rgeo-*" -depth -exec rm -rf {} \;
+fi
 
 echo "-----> Vendoring geo libraries done"
