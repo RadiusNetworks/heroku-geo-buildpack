@@ -134,7 +134,7 @@ set-prepend-env PATH "$APP_VENDOR/bin"
 
 # force recompile of the rgeo gems every time
 CACHE_BUNDLE_RUBY_DIR="$CACHE_DIR/vendor/bundle/ruby"
-if [ ! -d $CACHE_BUNDLE_RUBY_DIR ]; then
+if [ -d $CACHE_BUNDLE_RUBY_DIR ]; then
   find $CACHE_BUNDLE_RUBY_DIR -type d -name "rgeo-*" -depth -exec rm -rf {} \;
 fi
 
